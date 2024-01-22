@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,12 +72,20 @@ WSGI_APPLICATION = "foolish_division.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+DB_NAME = os.getenv("DJANGO_DB_NAME", "foolish_db")
+DB_USER = os.getenv("DJANGO_DB_USER", "foolish-user")
+DB_PASSWORD = os.getenv("DJANGO_DB_PASSWORD", "foolish-pg-pass")
+DB_HOST = os.getenv("DJANGO_DB_HOST", "postgres")
+DB_PORT = os.getenv("DJANGO_DB_PORT", "5432")
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 

@@ -11,9 +11,11 @@ COPY ../requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
 COPY ./compose/django/start-backend.sh /start-backend.sh
-RUN chmod +x /start-backend.sh && chown django /start-backend.sh
+RUN chmod +x /startup.sh && chown django /startup.sh
 
 COPY . /app
 
+EXPOSE 8000
+
 WORKDIR /app
-ENTRYPOINT ["/start-backend.sh"]
+ENTRYPOINT ["/startup.sh"]
