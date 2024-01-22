@@ -4,7 +4,7 @@ services:
   django:
     build:
       context: ..
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: django/dev.Dockerfile
     env_file: ../dev.env
     ports:
       - "8000:8000"
