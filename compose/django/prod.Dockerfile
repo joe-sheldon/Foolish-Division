@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update
 
 # Install NodeJS v18
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\ sudo apt-get install -y nodejs
 
 # Set up Django user
 RUN getent group django || groupadd -r django
