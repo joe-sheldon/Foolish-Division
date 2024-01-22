@@ -4,6 +4,9 @@ ENV PYTHONUNBUFFERED 1
 # Update System
 RUN apt-get update
 
+# Install NodeJS v18
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
+
 # Set up Django user
 RUN getent group django || groupadd -r django
 RUN getent passwd django || useradd -r -g django django
@@ -19,11 +22,11 @@ RUN chmod +x /startup-prod.sh && chown django /startup-prod.sh
 # Copy Server files to /app directory
 COPY . /app
 
-# Expose Backend API
-EXPOSE 8000
+# Install Node Modules
+RUN cd /app/frontend && npm install
 
-# Expose Frontend
-EXPOSE 80
+# Expose Frontend and Backend
+EXPOSE 80 8000
 
 WORKDIR /app
 ENTRYPOINT ["/startup-prod.sh"]
