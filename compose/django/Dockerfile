@@ -10,7 +10,7 @@ RUN getent passwd django || useradd -r -g django django
 COPY ../requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
-COPY ./compose/django/start-backend.sh /start-backend.sh
+COPY ./compose/django/startup.sh /startup.sh
 RUN chmod +x /startup.sh && chown django /startup.sh
 
 COPY . /app
