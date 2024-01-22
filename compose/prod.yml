@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  django:
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+    env_file: ../prod.env
+    ports:
+      - "8000:8000"

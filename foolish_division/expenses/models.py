@@ -77,7 +77,7 @@ class Expense(Model):
     amount = models.FloatField(default=0.00, blank=False, null=False)
     share_type = models.CharField(max_length=4, choices=SHARETYPE_CHOICES)
     category = models.ForeignKey(
-        "expenses.ExpenseCategory",
+        "foolish_division.expenses.ExpenseCategory",
         blank=False,
         null=False
     )
