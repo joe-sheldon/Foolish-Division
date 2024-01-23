@@ -2,10 +2,10 @@ FROM python:3.9-buster
 ENV PYTHONUNBUFFERED 1
 
 # Update System
-RUN apt-get update \
+RUN apt-get update -yq \
     && curl -L https://deb.nodesource.com/setup_18.x | bash \
-    && apt-get update \
-    && sudo apt-get install -y nodejs
+    && apt-get update -yq \
+    && apt-get install -yq nodejs
 
 # Set up Django user
 RUN getent group django || groupadd -r django
