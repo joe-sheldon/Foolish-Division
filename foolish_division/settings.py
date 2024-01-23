@@ -137,13 +137,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
-    "https://www.foolish-division.com"
-    "https://foolish-division.onrender.com"
+    "https://www.foolish-division.com",
+    "https://foolish-division.onrender.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
-    "https://localhost"
-    "https://www.foolish-division.com"
-    "https://foolish-division.onrender.com"
+    "https://localhost",
+    "https://www.foolish-division.com",
+    "https://foolish-division.onrender.com",
 ]
