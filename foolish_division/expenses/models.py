@@ -31,6 +31,10 @@ class ExpenseCategory(Model):
     name = models.CharField(max_length=128, blank=False, null=False, unique=True)
     description = models.CharField(max_length=1024, blank=True, null=False)
 
+    @property
+    def expenses(self):
+        return None
+
 
 class VendorCategory(Model):
     uuid = models.UUIDField(auto_created=True, primary_key=True)
