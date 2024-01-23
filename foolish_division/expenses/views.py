@@ -1,5 +1,7 @@
 from django.db.models import Q
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from foolish_division.expenses.models import Expense, Vendor, ExpenseCategory, ExpenseCategoryOwner
 from foolish_division.expenses.serializers import ExpenseSerializer, VendorSerializer, ExpenseCategorySerializer
@@ -41,3 +43,9 @@ class ExpenseViewset(viewsets.ModelViewSet):
             return Expense.objects.filter(
                 Q(payer=user) | Q(submitter=user)
             )
+
+
+class StatusViewset(viewsets.ViewSet):
+    @action(methods=["GET"], detail=False, url_name="ok")
+    def ok(self, request):
+        return Response(data={"status": "up"})
