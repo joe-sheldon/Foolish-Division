@@ -6,15 +6,15 @@ from foolish_division.expenses.models import ExpenseCategory, Vendor, Expense
 class ExpenseCategorySerializer(serializers.ModelSerializer):
 
     expenses = serializers.ModelSerializer(
-        source="",
         many=True,
-        default=[]
+        default=None,
+        allow_null=True
     )
 
     class Meta:
         model = ExpenseCategory
         fields = (
-            "uuid", "owners", "name", "description",
+            "uuid", "owners", "name", "description", "expenses",
         )
 
 

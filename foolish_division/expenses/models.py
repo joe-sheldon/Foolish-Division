@@ -14,6 +14,7 @@ class ExpenseCategoryOwner(Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey("ExpenseCategory", blank=False, null=False, on_delete=models.CASCADE)
     role = models.CharField(
+        max_length=5,
         choices=OWNER_ROLE_CHOICES,
         default=OWNER_ROLE_ADMIN
     )
@@ -33,7 +34,7 @@ class ExpenseCategory(Model):
 
     @property
     def expenses(self):
-        return None
+        return Expense.objects.filter(category=self)
 
 
 class VendorCategory(Model):
@@ -68,9 +69,10 @@ class Expense(Model):
         User,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        related_name="payer",
     )
-    submitter = models.ForeignKey(User, blank=True, null=True)
+    submitter = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name="submitter")
     name = models.CharField(max_length=128, blank=False, null=False)
     vendor = models.ForeignKey(
         "Vendor",
@@ -81,8 +83,9 @@ class Expense(Model):
     amount = models.FloatField(default=0.00, blank=False, null=False)
     share_type = models.CharField(max_length=4, choices=SHARETYPE_CHOICES)
     category = models.ForeignKey(
-        "foolish_division.expenses.ExpenseCategory",
-        blank=False,
-        null=False
+        "ExpenseCategory",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL
     )
 

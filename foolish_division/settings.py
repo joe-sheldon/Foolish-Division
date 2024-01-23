@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "foolish_division.expenses"
 ]
 
 MIDDLEWARE = [
