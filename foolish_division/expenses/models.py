@@ -12,7 +12,7 @@ class ExpenseCategoryOwner(Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.ForeignKey("ExpenseCategory", blank=False, null=False)
+    category = models.ForeignKey("ExpenseCategory", blank=False, null=False, on_delete=models.CASCADE)
     role = models.CharField(
         choices=OWNER_ROLE_CHOICES,
         default=OWNER_ROLE_ADMIN
