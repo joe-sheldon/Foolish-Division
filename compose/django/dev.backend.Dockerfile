@@ -14,7 +14,7 @@ RUN pip install -r /requirements.txt
 
 # Copy CORRECT startup script
 COPY ./compose/django/startup-dev.sh /startup-dev.sh
-RUN chmod +x /startup-dev.sh && chown django /startup-dev.sh
+RUN chmod +x /startup-backend.sh && chown django /startup-backend.sh
 
 # Copy Server files to /app directory
 COPY . /app
