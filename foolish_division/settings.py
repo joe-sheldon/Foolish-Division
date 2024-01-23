@@ -29,8 +29,8 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "www.foolish-division.com",
     "api.foolish-division.com",
-    "foolish-division.onrender.com"
-    "foolish-division-frontend.onrender.com"
+    "foolish-division.onrender.com",
+    "foolish-division-frontend.onrender.com",
 ]
 
 
