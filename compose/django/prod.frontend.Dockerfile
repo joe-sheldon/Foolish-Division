@@ -8,7 +8,7 @@ RUN apt-get update -yq \
 
 # Copy CORRECT startup script
 COPY ./compose/django/startup-frontend.sh /startup-frontend.sh
-RUN chmod +x /startup-frontend.sh && chown django /startup-frontend.sh
+RUN chmod +x /startup-frontend.sh
 
 # Copy Server files to /app directory
 COPY . /app
