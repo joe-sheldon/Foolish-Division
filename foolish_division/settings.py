@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0", "www.foolish-division.com"]
+ALLOWED_HOSTS = ["0.0.0.0", "www.foolish-division.com", "foolish-division.onrender.com"]
 
 
 # Application definition
@@ -138,10 +138,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "https://www.foolish-division.com"
+    "https://foolish-division.onrender.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
     "https://localhost"
     "https://www.foolish-division.com"
+    "https://foolish-division.onrender.com"
 ]
