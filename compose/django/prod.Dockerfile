@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED 1
 # Update System
 RUN apt-get update \
     && curl -L https://deb.nodesource.com/setup_18.x | bash \
-    && spt-get update \
+    && apt-get update \
     && sudo apt-get install -y nodejs
 
 # Set up Django user
