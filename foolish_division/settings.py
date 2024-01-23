@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "www.foolish-division.com",
     "api.foolish-division.com",
-    "https://foolish-division.onrender.com"
+    "foolish-division.onrender.com"
 ]
 
 
