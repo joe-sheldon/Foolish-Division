@@ -21,8 +21,8 @@ class ExpenseAdmin(admin.ModelAdmin):
     list_display = ('uuid', 'name', 'payer', 'submitter', 'vendor', 'category', 'share_type', 'amount')
 
 
-admin.register(ExpenseCategoryOwnerAdmin)
-admin.register(ExpenseCategoryAdmin)
-admin.register(VendorCategoryAdmin)
-admin.register(VendorAdmin)
-admin.register(ExpenseAdmin)
+admin.site.register(ExpenseCategoryOwnerAdmin)
+admin.site.register(ExpenseCategoryAdmin)
+admin.site.register(VendorCategoryAdmin)
+admin.site.register(VendorAdmin)
+admin.site.register(ExpenseAdmin)
