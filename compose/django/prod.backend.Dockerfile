@@ -19,7 +19,7 @@ RUN chmod +x /startup-backend.sh && chown django /startup-backend.sh
 # Copy Server files to /app directory
 COPY . /app
 
-# Expose Frontend and Backend
+# Expose Backend
 EXPOSE 8000
 
 WORKDIR /app
