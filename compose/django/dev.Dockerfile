@@ -2,7 +2,7 @@ FROM python:3.9-buster
 ENV PYTHONUNBUFFERED 1
 
 # Update System
-RUN apt-get update
+RUN apt-get update -yq 
 
 # Set up Django user
 RUN getent group django || groupadd -r django
