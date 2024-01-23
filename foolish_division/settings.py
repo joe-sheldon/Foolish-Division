@@ -141,6 +141,6 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "https://www.foolish-division.com"
+    "localhost",
+    "www.foolish-division.com"
 ]
