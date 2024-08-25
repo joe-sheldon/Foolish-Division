@@ -35,7 +35,6 @@ ALLOWED_HOSTS = [
 
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -45,7 +44,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
-    "foolish_division.expenses"
+    "foolish_division.expenses",
+    "foolish_division.user",
+    "foolish_division.log",
 ]
 
 MIDDLEWARE = [

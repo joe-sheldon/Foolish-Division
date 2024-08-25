@@ -2,7 +2,7 @@ FROM python:3.9-buster
 ENV PYTHONUNBUFFERED 1
 
 # Update System
-RUN apt-get update -yq
+RUN apt-get update -yq 
 
 # Set up Django user
 RUN getent group django || groupadd -r django
@@ -19,8 +19,8 @@ RUN chmod +x /startup-backend.sh && chown django /startup-backend.sh
 # Copy Server files to /app directory
 COPY . /app
 
-# Expose Backend
+# Expose Django API
 EXPOSE 8000
 
 WORKDIR /app
-ENTRYPOINT ["/startup-backend.sh"]
+ENTRYPOINT ["/startup-dev.sh"]
