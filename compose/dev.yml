@@ -17,8 +17,8 @@ services:
     container_name: django
     build:
       context: ..
-      dockerfile: django/dev.backend.Dockerfile
-    env_file: ./dev.env
+      dockerfile: compose/django/dev.backend.Dockerfile
+    env_file: ./compose/dev.env
     ports:
       - "8000:8000"
     depends_on:
