@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 
-from foolish_division.expenses.models import Expense, ExpenseGroup, ExpenseGroupMember
+from foolish_division.expenses.models import Expense, ExpenseGroupMember, ExpenseGroup
 from foolish_division.expenses.permissions import IsInExpenseGroup, IsExpenseOwnedOrShared
 from foolish_division.expenses.serializers import ExpenseSerializer, ExpenseGroupSerializer
 
@@ -18,9 +18,8 @@ class ExpenseGroupViewset(viewsets.ModelViewSet):
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
-        # Get all ExpenseCategories owned by this user.
         return ExpenseGroupMember.objects\
-            .filter(user=user)\
+            .filter(profile__owner=user)\
             .values_list("group", flat=True)
 
 

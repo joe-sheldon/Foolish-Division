@@ -15,6 +15,7 @@ class ExpenseGroupMember(Model):
     )
 
     profile = models.ForeignKey(ExpenseProfile, on_delete=models.CASCADE)
+    group = models.ForeignKey("expenses.ExpenseGroup", on_delete=models.CASCADE, related_name="members")
     type = models.CharField(max_length=3, choices=MEMBER_TYPE_CHOICES, default=MEMBER_TYPE_MEMBER)
 
 class ExpenseGroup(Model):
@@ -23,8 +24,6 @@ class ExpenseGroup(Model):
 
     name = models.CharField(max_length=128, blank=False, null=False)
     description = models.CharField(max_length=1024, blank=True, null=True)
-
-    members = models.ManyToManyField(ExpenseProfile, through="ExpenseGroupMember")
 
     @property
     def expenses(self):
