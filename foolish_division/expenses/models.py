@@ -12,7 +12,7 @@ class ExpenseGroupMember(Model):
         (MEMBER_TYPE_MEMBER, "Normal Member"),
     )
 
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     group = models.ForeignKey("ExpenseGroup", on_delete=models.CASCADE)
     type = models.CharField(max_length=3, choices=MEMBER_TYPE_CHOICES, default=MEMBER_TYPE_MEMBER)
 
@@ -23,7 +23,7 @@ class ExpenseGroup(Model):
     name = models.CharField(max_length=128, blank=False, null=False)
     description = models.CharField(max_length=1024, blank=True, null=True)
 
-    members = models.ManyToManyField("User", through="ExpenseGroupMember")
+    members = models.ManyToManyField(User, through="ExpenseGroupMember")
 
     @property
     def expenses(self):
@@ -41,8 +41,8 @@ class Expense(Model):
 
     uuid = models.UUIDField(auto_created=True, primary_key=True, editable=False)
 
-    payer = models.ForeignKey( User, blank=True, null=True, on_delete=models.SET_NULL)
-    submitter = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+    payer = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="expenses_payer_set")
+    submitter = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="expenses_submitter_set")
     group = models.ForeignKey(ExpenseGroup, blank=True, null=True, on_delete=models.SET_NULL)
 
     name = models.CharField(max_length=128, blank=False, null=False)

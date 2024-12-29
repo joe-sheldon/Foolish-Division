@@ -37,4 +37,4 @@ class ExpenseViewset(viewsets.ModelViewSet):
 class StatusViewset(viewsets.ViewSet):
     @action(methods=["GET"], detail=False, url_name="ok")
     def ok(self, request):
-        return Response(data={"status": "up"})
+        return Response(data={"status": "ok"})

@@ -18,6 +18,7 @@ services:
     build:
       context: ../ # root of project with manage.py
       dockerfile: compose/django/dev.backend.Dockerfile
+    env_file: ../dev.env
     ports:
       - "8000:8000"
     depends_on:
