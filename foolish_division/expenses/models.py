@@ -15,7 +15,7 @@ class ExpenseGroupMember(Model):
     )
 
     profile = models.ForeignKey(ExpenseProfile, on_delete=models.CASCADE)
-    group = models.ForeignKey("ExpenseGroup", on_delete=models.CASCADE)
+    # group = models.ForeignKey("ExpenseGroup", on_delete=models.CASCADE)
     type = models.CharField(max_length=3, choices=MEMBER_TYPE_CHOICES, default=MEMBER_TYPE_MEMBER)
 
 class ExpenseGroup(Model):

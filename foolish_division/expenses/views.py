@@ -5,11 +5,13 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 
 from foolish_division.expenses.models import Expense, ExpenseGroup, ExpenseGroupMember
+from foolish_division.expenses.permissions import IsInExpenseGroup, IsExpenseOwnedOrShared
 from foolish_division.expenses.serializers import ExpenseSerializer, ExpenseGroupSerializer
 
 
 class ExpenseGroupViewset(viewsets.ModelViewSet):
     serializer_class = ExpenseGroupSerializer
+    permission_classes = [IsInExpenseGroup]
 
     def get_queryset(self):
         user = self.request.user
@@ -24,6 +26,7 @@ class ExpenseGroupViewset(viewsets.ModelViewSet):
 
 class ExpenseViewset(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
+    permission_classes = [IsExpenseOwnedOrShared]
 
     def get_queryset(self):
         user = self.request.user

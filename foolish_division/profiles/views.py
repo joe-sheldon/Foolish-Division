@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from foolish_division.expenses.models import ExpenseGroupMember
 from foolish_division.profiles.models import ExpenseProfile
+from foolish_division.profiles.permissions import IsProfileOwner
 from foolish_division.profiles.serializers import ExpenseProfileSerializer
 from foolish_division.settings import ACTIVE_PROFILE_COOKIE_MAX_AGE_SECONDS
 
@@ -13,6 +14,7 @@ from foolish_division.settings import ACTIVE_PROFILE_COOKIE_MAX_AGE_SECONDS
 class UserExpenseProfileViewset(viewsets.ModelViewSet):
     """Profiles belonging to the user"""
     serializer_class = ExpenseProfileSerializer
+    permission_classes = [IsProfileOwner]
 
     def get_queryset(self):
         user = self.request.user
@@ -21,7 +23,7 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
 
         return ExpenseProfile.objects.filter(owner=user)
 
-    def get_active_profile(self):
+    def get_active_profile_via_cookie(self):
         user = self.request.user
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
@@ -32,13 +34,15 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
                   .filter(owner=self.request.user)
                   .get(uuid=active_profile_uuid))
 
-    @action(methods=["GET", "POST"], detail=False, url_name="active")
+    @action(methods=["GET", "POST", "PATCH"], detail=False, url_name="active")
     def active(self, request):
         if request.method == "GET":
-            active_profile = self.get_active_profile()
+            # Get active profile details
+            active_profile = self.get_active_profile_via_cookie()
             return ExpenseProfileSerializer(active_profile).data
 
         if request.method == "POST":
+            # Change the active profile
             new_active_profile_uuid = request.data.get("active_profile")
             if not new_active_profile_uuid:
                 raise ValidationError("You must supply 'new_active_profile_uuid' in the body")
@@ -59,13 +63,16 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
             )
             return resp
 
-
+    def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.owner.user != self.request.user:
+            raise PermissionDenied("You must own this object in order to update it")
 
 class ContactedExpenseProfileViewset(viewsets.ReadOnlyModelViewSet):
     """Profiles that the user has shared expenses with"""
     serializer_class = ExpenseProfileSerializer
 
-    def get_active_profile(self):
+    def get_active_profile_via_cookie(self):
         user = self.request.user
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
@@ -91,7 +98,7 @@ class ContactedExpenseProfileViewset(viewsets.ReadOnlyModelViewSet):
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
-        active_profile = self.get_active_profile()
+        active_profile = self.get_active_profile_via_cookie()
         friends = self.get_friends_of_profile(active_profile)
 
         return ExpenseProfileSerializer(friends, context={"active_profile": active_profile}).data
