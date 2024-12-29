@@ -4,12 +4,12 @@ from foolish_division.expenses.models import Expense, ExpenseGroupMember, Expens
 
 
 @admin.register(ExpenseGroupMember)
-class ExpenseGroupMember(admin.ModelAdmin):
+class ExpenseGroupMemberAdmin(admin.ModelAdmin):
     list_display = ('user', 'group', 'type')
 
 
 @admin.register(ExpenseGroup)
-class ExpenseGroup(admin.ModelAdmin):
+class ExpenseGroupAdmin(admin.ModelAdmin):
     list_display = ('uuid', 'name', 'description')
 
 

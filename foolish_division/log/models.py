@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Model
 
+from foolish_division.profiles.models import ExpenseProfile
+
 
 # Create your models here.
 class LogEntry(Model):
@@ -29,7 +31,7 @@ class LogEntry(Model):
     type = models.CharField(max_length=3, choices=TYPE_CHOICES)
     message = models.CharField(max_length=256, blank=True, null=False)
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name="logs")
+    profile = models.ForeignKey(ExpenseProfile, on_delete=models.SET_NULL, blank=True, null=True, related_name="logs")
     group = models.ForeignKey("expenses.ExpenseGroup", on_delete=models.SET_NULL, blank=True, null=True, related_name="logs")
 
     md = models.JSONField(default=dict, blank=False, null=False)

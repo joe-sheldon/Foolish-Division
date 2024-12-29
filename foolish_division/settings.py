@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "foolish_division.expenses",
     "foolish_division.log",
+    "foolish_division.profiles",
 ]
 
 MIDDLEWARE = [
@@ -105,7 +106,11 @@ DATABASES = {
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-    )
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
 
 
