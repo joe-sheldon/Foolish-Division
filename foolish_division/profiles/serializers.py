@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from foolish_division.expenses.models import ExpenseGroup, Expense, ExpenseGroupMember
 from foolish_division.expenses.serializers import ExpenseGroupSerializer
 from foolish_division.profiles.models import ExpenseProfile
 
