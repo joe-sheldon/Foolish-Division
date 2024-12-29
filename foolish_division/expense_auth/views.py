@@ -39,6 +39,21 @@ class UserAuthenticationViewSet(viewsets.ViewSet):
         )
         return Response(data=data)
 
+    @action(methods=["POST"], detail=False, url_name="logout")
+    def logout(self, request):
+        # FIXME push validation to serializer
+        user = self.request.user
+        if user or user.is_anonymous:
+            raise PermissionDenied(f"You cannot log out if not logged in!")
+
+        token = Token.objects.get(user=user)
+        token.delete()
+
+        data = dict(
+            msg="Logged out",
+        )
+        return Response(data=data)
+
     @action(methods=["POST"], detail=False, url_name="signup")
     def signup(self, request):
         user = self.request.user
