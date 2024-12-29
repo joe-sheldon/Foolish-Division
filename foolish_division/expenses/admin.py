@@ -5,7 +5,7 @@ from foolish_division.expenses.models import Expense, ExpenseGroupMember, Expens
 
 @admin.register(ExpenseGroupMember)
 class ExpenseGroupMemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'group', 'type')
+    list_display = ('profile', 'group', 'type')
 
 
 @admin.register(ExpenseGroup)

@@ -18,10 +18,12 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework.authtoken import views
 
+from foolish_division.expense_auth.views import UserAuthenticationViewSet
 from foolish_division.expenses.views import ExpenseGroupViewset, ExpenseViewset, StatusViewset
 from foolish_division.profiles.views import UserExpenseProfileViewset, ContactedExpenseProfileViewset
 
 router = routers.DefaultRouter()
+router.register(r'eauth', UserAuthenticationViewSet, 'eauth')
 router.register(r'groups', ExpenseGroupViewset, 'groups')
 router.register(r'expenses', ExpenseViewset, 'expenses')
 router.register(r'status', StatusViewset, 'status'),
@@ -32,5 +34,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
     path("__reload__/", include("django_browser_reload.urls")),
-    path('token-auth/', views.obtain_auth_token)
+    path('token-expense_auth/', views.obtain_auth_token)
 ]
