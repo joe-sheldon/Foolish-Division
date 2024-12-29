@@ -43,7 +43,7 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
         if request.method == "GET":
             # Get active profile details
             active_profile = self.get_primary_profile()
-            return Response(ExpenseProfileSerializer(active_profile).data)
+            return Response(self.get_serializer(active_profile).data)
 
         if request.method == "POST":
             # Change the active profile
@@ -68,13 +68,20 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
             except ExpenseProfile.DoesNotExist:
                 raise ValidationError("Could not find profile")
 
-            resp = Response(data=ExpenseProfileSerializer(new_active_profile).data)
+            resp = Response(data=self.get_serializer(new_active_profile).data)
             return resp
 
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
-        if obj.owner.user != self.request.user:
+        if obj.owner != self.request.user:
             raise PermissionDenied("You must own this object in order to update it")
+
+        slzrc = self.get_serializer_class()
+        slzr = slzrc(obj, data=request.data, partial=True)
+        if slzr.is_valid():
+            slzr.save()
+
+        return Response(slzr.data)
 
 class ContactedExpenseProfileViewset(viewsets.ReadOnlyModelViewSet):
     """Profiles that the user has shared expenses with"""

@@ -8,4 +8,4 @@ class IsProfileOwner(permissions.BasePermission):
 
     # for object level permissions
     def has_object_permission(self, request, view, profile):
-        return profile.owner.user == request.user
+        return profile.owner == request.user
