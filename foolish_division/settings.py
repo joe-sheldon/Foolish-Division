@@ -110,7 +110,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    ]
+    ],
+    'DEFAULT_PARSER_CLASSES': (
+            'rest_framework.parsers.JSONParser',
+            'rest_framework.parsers.FormParser',
+            'rest_framework.parsers.MultiPartParser',
+    ),
 }
 
 
@@ -169,3 +174,5 @@ CSRF_TRUSTED_ORIGINS = [
     "https://api.foolish-division.com",
     "https://foolish-division.onrender.com",
 ]
+
+ACTIVE_PROFILE_COOKIE_MAX_AGE_SECONDS = os.getenv("DJANGO_ACTIVE_PROFILE_COOKIE_MAX_AGE", 30*24*60*60)

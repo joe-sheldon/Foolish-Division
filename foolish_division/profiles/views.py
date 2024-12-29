@@ -1,9 +1,12 @@
 from rest_framework import viewsets
-from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
+from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.response import Response
 
-from foolish_division.expenses.models import Expense, ExpenseGroup, ExpenseGroupMember
+from foolish_division.expenses.models import ExpenseGroupMember
 from foolish_division.profiles.models import ExpenseProfile
 from foolish_division.profiles.serializers import ExpenseProfileSerializer
+from foolish_division.settings import ACTIVE_PROFILE_COOKIE_MAX_AGE_SECONDS
 
 
 # Create your views here.
@@ -18,18 +21,60 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
 
         return ExpenseProfile.objects.filter(owner=user)
 
+    def get_active_profile(self):
+        user = self.request.user
+        if not user or user.is_anonymous:
+            raise PermissionDenied("You must be logged in")
+
+        active_profile_uuid = self.request.COOKIES.get("active_profile")
+
+        return (ExpenseProfile.objects
+                  .filter(owner=self.request.user)
+                  .get(uuid=active_profile_uuid))
+
+    @action(methods=["GET", "POST"], detail=False, url_name="active")
+    def active(self, request):
+        if request.method == "GET":
+            active_profile = self.get_active_profile()
+            return ExpenseProfileSerializer(active_profile).data
+
+        if request.method == "POST":
+            new_active_profile_uuid = request.data.get("active_profile")
+            if not new_active_profile_uuid:
+                raise ValidationError("You must supply 'new_active_profile_uuid' in the body")
+
+            new_active_profile = None
+            try:
+                new_active_profile = (ExpenseProfile.objects
+                                      .filter(owner=self.request.user)
+                                      .get(uuid=new_active_profile_uuid))
+            except ExpenseProfile.DoesNotExist:
+                raise ValidationError("Could not find profile")
+
+            resp = Response(data=ExpenseProfileSerializer(new_active_profile).data)
+            resp.set_cookie(
+                "active_profile",
+                new_active_profile_uuid,
+                max_age=ACTIVE_PROFILE_COOKIE_MAX_AGE_SECONDS
+            )
+            return resp
+
+
 
 class ContactedExpenseProfileViewset(viewsets.ReadOnlyModelViewSet):
     """Profiles that the user has shared expenses with"""
     serializer_class = ExpenseProfileSerializer
 
     def get_active_profile(self):
-        profile_uuid = self.request.GET.get("active_profile")
-        if not profile_uuid:
-            raise PermissionDenied("You must be within context of a Profile")
+        user = self.request.user
+        if not user or user.is_anonymous:
+            raise PermissionDenied("You must be logged in")
 
-        profile = ExpenseProfile.objects.get(name=profile_uuid)
-        return profile
+        active_profile_uuid = self.request.COOKIES.get("active_profile")
+
+        return (ExpenseProfile.objects
+                .filter(owner=self.request.user)
+                .get(uuid=active_profile_uuid))
 
     def get_friends_of_profile(self, profile: ExpenseProfile):
         member_uuids = (ExpenseGroupMember.objects

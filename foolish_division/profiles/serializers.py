@@ -29,4 +29,3 @@ class ExpenseProfileSerializer(serializers.ModelSerializer):
             return 10.0
 
         return None
-
