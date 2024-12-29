@@ -1,5 +1,5 @@
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from foolish_division.expenses.models import Expense, ExpenseGroupMember, ExpenseGroup
 from foolish_division.expenses.permissions import IsInExpenseGroup, IsExpenseOwnedOrShared
 from foolish_division.expenses.serializers import ExpenseSerializer, ExpenseGroupSerializer
+from foolish_division.profiles.models import ExpenseProfile
 
 
 class ExpenseGroupViewset(viewsets.ModelViewSet):
@@ -26,22 +27,35 @@ class ExpenseViewset(viewsets.ModelViewSet):
     serializer_class = ExpenseSerializer
     permission_classes = [IsExpenseOwnedOrShared]
 
+    def get_serializer_context(self):
+        return dict(
+            request=self.request,
+        )
+
     def get_queryset(self):
         user = self.request.user
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
+        profile = ExpenseProfile.get_primary_profile(user)
         return Expense.objects.filter(
-            Q(payer=user) | Q(submitter=user)
+            Q(payer=profile) | Q(submitter=profile)
         )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         # FIXME this shouldn't be necessary to implement
         obj = self.get_object()
         slzrc = self.get_serializer_class()
         slzr = slzrc(obj, data=request.data, partial=True)
-        if slzr.is_valid():
-            slzr.save()
+        slzr.is_valid(raise_exception=True)
+        slzr.save()
 
         return Response(slzr.data)
 

@@ -18,3 +18,7 @@ class ExpenseProfile(Model):
 
     class Meta:
         unique_together = ("owner", "name")
+
+    @classmethod
+    def get_primary_profile(cls, user: User):
+        return ExpenseProfile.objects.filter(owner=user).filter(primary=True).first()

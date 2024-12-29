@@ -22,7 +22,7 @@ class ExpenseGroupMemberSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class ExpenseSerializer(serializers.Serializer):
+class ExpenseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Expense
@@ -31,10 +31,8 @@ class ExpenseSerializer(serializers.Serializer):
         )
 
     def create(self, validated_data):
-        # FIXME do a log here
-
         request = self.context["request"]
-        profile = ExpenseProfile.objects.filter(owner=request.user).filter(primary=True).first()
+        profile = ExpenseProfile.get_primary_profile(request.user)
 
         data = dict(
             submitter=profile,
@@ -70,7 +68,7 @@ class ExpenseGroupSerializer(serializers.ModelSerializer):
         group = super().create(request.data)
 
         # Create first member
-        profile = ExpenseProfile.objects.filter(owner=request.user).filter(primary=True).first()
-        ExpenseGroupMember.objects.create(profile=profile, group=group, type=ExpenseGroupMember.MEMBER_TYPE_OWNER)
+        profile = ExpenseProfile.get_primary_profile(request.user)
+        group.create_owner(profile)
 
         return group

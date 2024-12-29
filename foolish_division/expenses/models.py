@@ -30,6 +30,12 @@ class ExpenseGroup(Model):
     def expenses(self):
         return Expense.objects.filter(group=self)
 
+    def create_owner(self, profile) -> ExpenseGroupMember:
+        return ExpenseGroupMember.objects.create(profile=profile, group=self, type=ExpenseGroupMember.MEMBER_TYPE_OWNER)
+
+    def create_member(self, profile) -> ExpenseGroupMember:
+        return ExpenseGroupMember.objects.create(profile=profile, group=self, type=ExpenseGroupMember.MEMBER_TYPE_MEMBER)
+
 
 class Expense(Model):
 
