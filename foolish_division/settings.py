@@ -111,7 +111,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+        'foolish_division.expense_auth.authentication.FoolishTokenAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.JSONParser',
