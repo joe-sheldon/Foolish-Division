@@ -1,4 +1,4 @@
-from foolish_division.expenses.models import Expense, ExpenseCategory
+from foolish_division.expenses.models import Expense, ExpenseGroup
 
 
 class ExpenseHelper:
@@ -7,5 +7,5 @@ class ExpenseHelper:
 
 
 class ExpenseCategoryHelper:
-    def __init__(self, category: ExpenseCategory):
+    def __init__(self, category: ExpenseGroup):
         self.category = category

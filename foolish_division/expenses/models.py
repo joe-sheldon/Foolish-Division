@@ -3,56 +3,31 @@ from django.db import models
 from django.db.models import Model
 
 
-class ExpenseCategoryOwner(Model):
-    OWNER_ROLE_ADMIN = "admin"
-    OWNER_ROLE_RESTRICTED = "restr"
-    OWNER_ROLE_CHOICES = (
-        (OWNER_ROLE_ADMIN, "Administrator"),
-        (OWNER_ROLE_RESTRICTED, "Regular Owner")
+class ExpenseGroupMember(Model):
+
+    MEMBER_TYPE_OWNER = "own"
+    MEMBER_TYPE_MEMBER = "mem"
+    MEMBER_TYPE_CHOICES = (
+        (MEMBER_TYPE_OWNER, "Owner"),
+        (MEMBER_TYPE_MEMBER, "Normal Member"),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.ForeignKey("ExpenseCategory", blank=False, null=False, on_delete=models.CASCADE)
-    role = models.CharField(
-        max_length=5,
-        choices=OWNER_ROLE_CHOICES,
-        default=OWNER_ROLE_ADMIN
-    )
+    user = models.ForeignKey("User", on_delete=models.CASCADE)
+    group = models.ForeignKey("ExpenseGroup", on_delete=models.CASCADE)
+    type = models.CharField(max_length=3, choices=MEMBER_TYPE_CHOICES, default=MEMBER_TYPE_MEMBER)
 
-    class Meta:
-        unique_together = ('user', 'category')
+class ExpenseGroup(Model):
 
+    uuid = models.UUIDField(auto_created=True, primary_key=True, editable=False)
 
-class ExpenseCategory(Model):
-    uuid = models.UUIDField(auto_created=True, primary_key=True)
-    owners = models.ManyToManyField(
-        User,
-        through=ExpenseCategoryOwner,
-    )
-    name = models.CharField(max_length=128, blank=False, null=False, unique=True)
-    description = models.CharField(max_length=1024, blank=True, null=False)
+    name = models.CharField(max_length=128, blank=False, null=False)
+    description = models.CharField(max_length=1024, blank=True, null=True)
+
+    members = models.ManyToManyField("User", through="ExpenseGroupMember")
 
     @property
     def expenses(self):
-        return Expense.objects.filter(category=self)
-
-
-class VendorCategory(Model):
-    uuid = models.UUIDField(auto_created=True, primary_key=True)
-    name = models.CharField(max_length=128, blank=False, null=False, unique=True)
-    description = models.CharField(max_length=1024, blank=True, null=False)
-
-
-class Vendor(Model):
-    uuid = models.UUIDField(auto_created=True, primary_key=True)
-    name = models.CharField(max_length=128, blank=False, null=False)
-    description = models.CharField(max_length=1024, blank=True, null=False)
-    category = models.ForeignKey(
-        "VendorCategory",
-        blank=True,
-        null=False,
-        on_delete=models.CASCADE
-    )
+        return Expense.objects.filter(group=self)
 
 
 class Expense(Model):
@@ -64,28 +39,14 @@ class Expense(Model):
         (SHARETYPE_FULL, "Payer Owed Full Expense"),
     )
 
-    uuid = models.UUIDField(auto_created=True, primary_key=True)
-    payer = models.ForeignKey(
-        User,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="payer",
-    )
-    submitter = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name="submitter")
+    uuid = models.UUIDField(auto_created=True, primary_key=True, editable=False)
+
+    payer = models.ForeignKey( User, blank=True, null=True, on_delete=models.SET_NULL)
+    submitter = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+    group = models.ForeignKey(ExpenseGroup, blank=True, null=True, on_delete=models.SET_NULL)
+
     name = models.CharField(max_length=128, blank=False, null=False)
-    vendor = models.ForeignKey(
-        "Vendor",
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL
-    )
     amount = models.FloatField(default=0.00, blank=False, null=False)
     share_type = models.CharField(max_length=4, choices=SHARETYPE_CHOICES)
-    category = models.ForeignKey(
-        "ExpenseCategory",
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL
-    )
+
 
