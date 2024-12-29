@@ -5,25 +5,21 @@ from django.db.models import Model
 # Create your models here.
 class LogEntry(Model):
 
-    TYPE_FRIEND_REQUEST_SENT = "frs"
-    TYPE_FRIEND_CONFIRMED = "frc"
     TYPE_EXPENSE_CREATED = "exc"
     TYPE_EXPENSE_MODIFIED = "exm"
     TYPE_EXPENSE_DELETED = "exd"
-    TYPE_EXPENSE_CATEGORY_CREATED = "ecc"
-    TYPE_EXPENSE_CATEGORY_MODIFIED = "ecm"
-    TYPE_EXPENSE_CATEGORY_DELETED = "ecd"
+    TYPE_EXPENSE_GROUP_CREATED = "ecc"
+    TYPE_EXPENSE_GROUP_MODIFIED = "ecm"
+    TYPE_EXPENSE_GROUP_DELETED = "ecd"
     TYPE_EXPENSES_SETTLED = "est"
 
     TYPE_CHOICES = (
-        (TYPE_FRIEND_REQUEST_SENT, "Friend Request Sent"),
-        (TYPE_FRIEND_CONFIRMED, "Friend Request Confirmed"),
         (TYPE_EXPENSE_CREATED, "Expense Created"),
         (TYPE_EXPENSE_MODIFIED, "Expense Modified"),
         (TYPE_EXPENSE_DELETED, "Expense Deleted"),
-        (TYPE_EXPENSE_CATEGORY_CREATED, "Expense Category Created"),
-        (TYPE_EXPENSE_CATEGORY_MODIFIED, "Expense Category Modified"),
-        (TYPE_EXPENSE_CATEGORY_DELETED, "Expense Category Deleted"),
+        (TYPE_EXPENSE_GROUP_CREATED, "Expense Group Created"),
+        (TYPE_EXPENSE_GROUP_MODIFIED, "Expense Group Modified"),
+        (TYPE_EXPENSE_GROUP_DELETED, "Expense Group Deleted"),
         (TYPE_EXPENSES_SETTLED, "Expenses Settled"),
     )
 

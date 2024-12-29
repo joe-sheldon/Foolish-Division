@@ -6,6 +6,6 @@ class ExpenseHelper:
         self.expense = expense
 
 
-class ExpenseCategoryHelper:
+class ExpenseGroupHelper:
     def __init__(self, category: ExpenseGroup):
         self.category = category

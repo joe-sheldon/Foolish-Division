@@ -17,11 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from foolish_division.expenses.views import VendorViewset, ExpenseCategoryViewset, ExpenseViewset, StatusViewset
+from foolish_division.expenses.views import ExpenseGroupViewset, ExpenseViewset, StatusViewset
 
 router = routers.DefaultRouter()
-router.register(r'vendors', VendorViewset, 'vendors')
-router.register(r'category', ExpenseCategoryViewset, 'category')
+router.register(r'groups', ExpenseGroupViewset, 'groups')
 router.register(r'expenses', ExpenseViewset, 'expenses')
 router.register(r'status', StatusViewset, 'status')
 
