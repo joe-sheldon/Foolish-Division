@@ -13,7 +13,7 @@ class ExpenseGroupViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if not user:
+        if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
         # Get all ExpenseCategories owned by this user.
@@ -27,7 +27,7 @@ class ExpenseViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if not user:
+        if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
         return Expense.objects.filter(
