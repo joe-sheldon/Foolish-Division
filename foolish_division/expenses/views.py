@@ -3,33 +3,22 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from foolish_division.expenses.models import Expense, Vendor, ExpenseCategory, ExpenseCategoryOwner
-from foolish_division.expenses.serializers import ExpenseSerializer, VendorSerializer, ExpenseCategorySerializer
+from foolish_division.expenses.models import Expense, ExpenseGroup, ExpenseGroupMember
+from foolish_division.expenses.serializers import ExpenseSerializer, ExpenseGroupSerializer
 
 
-class VendorViewset(viewsets.ModelViewSet):
-    serializer_class = VendorSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        if not user:
-            return Vendor.objects.none()
-
-        return Vendor.objects.all()
-
-
-class ExpenseCategoryViewset(viewsets.ModelViewSet):
-    serializer_class = ExpenseCategorySerializer
+class ExpenseGroupViewset(viewsets.ModelViewSet):
+    serializer_class = ExpenseGroupSerializer
 
     def get_queryset(self):
         user = self.request.user
         if not user:
-            return ExpenseCategory.objects.none()
+            return ExpenseGroup.objects.none()
 
         # Get all ExpenseCategories owned by this user.
-        return ExpenseCategoryOwner.objects\
+        return ExpenseGroupMember.objects\
             .filter(user=user)\
-            .values_list("category", flat=True)
+            .values_list("group", flat=True)
 
 
 class ExpenseViewset(viewsets.ModelViewSet):

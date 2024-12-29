@@ -4,27 +4,17 @@ from foolish_division.expenses.models import ExpenseCategory, ExpenseCategoryOwn
 
 
 @admin.register(ExpenseCategoryOwner)
-class ExpenseCategoryOwnerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'role')
+class ExpenseGroupMember(admin.ModelAdmin):
+    list_display = ('user', 'group', 'type')
 
 
 @admin.register(ExpenseCategory)
-class ExpenseCategoryAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'name')
-
-
-@admin.register(VendorCategory)
-class VendorCategoryAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'name')
-
-
-@admin.register(Vendor)
-class VendorAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'name', 'category')
+class ExpenseGroup(admin.ModelAdmin):
+    list_display = ('uuid', 'name', 'description')
 
 
 @admin.register(Expense)
 class ExpenseAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'name', 'payer', 'submitter', 'vendor', 'category', 'share_type', 'amount')
+    list_display = ('uuid', 'name', 'payer', 'submitter', 'group', 'share_type', 'amount')
 
 
