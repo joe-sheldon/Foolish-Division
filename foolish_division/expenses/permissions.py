@@ -1,6 +1,7 @@
 from rest_framework import permissions
 
 from foolish_division.expenses.models import ExpenseGroup, Expense
+from foolish_division.profiles.models import ExpenseProfile
 
 
 class IsInExpenseGroup(permissions.BasePermission):
@@ -10,7 +11,7 @@ class IsInExpenseGroup(permissions.BasePermission):
 
     # for object level permissions
     def has_object_permission(self, request, view, expense_group: ExpenseGroup):
-        return expense_group.members.filter(owner=request.user).exists()
+        return expense_group.members.filter(profile__owner=request.user).exists()
 
 class IsExpenseOwnedOrShared(permissions.BasePermission):
     # for view permission

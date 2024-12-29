@@ -72,12 +72,9 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
             return resp
 
     def update(self, request, *args, **kwargs):
-        obj = self.get_object()
-        if obj.owner != self.request.user:
-            raise PermissionDenied("You must own this object in order to update it")
-
+        # FIXME this shouldn't be necessary to implement
         slzrc = self.get_serializer_class()
-        slzr = slzrc(obj, data=request.data, partial=True)
+        slzr = slzrc(self.get_object(), data=request.data, partial=True)
         if slzr.is_valid():
             slzr.save()
 

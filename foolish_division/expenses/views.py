@@ -15,12 +15,11 @@ class ExpenseGroupViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if not user or user.is_anonymous:
-            raise PermissionDenied("You must be logged in")
-
-        return ExpenseGroupMember.objects\
+        group_ids = ExpenseGroupMember.objects\
             .filter(profile__owner=user)\
-            .values_list("group", flat=True)
+            .values_list("group__uuid", flat=True)
+
+        return ExpenseGroup.objects.filter(uuid__in=group_ids)
 
 
 class ExpenseViewset(viewsets.ModelViewSet):
@@ -36,11 +35,35 @@ class ExpenseViewset(viewsets.ModelViewSet):
             Q(payer=user) | Q(submitter=user)
         )
 
+    def update(self, request, *args, **kwargs):
+        # FIXME this shouldn't be necessary to implement
+        obj = self.get_object()
+        slzrc = self.get_serializer_class()
+        slzr = slzrc(obj, data=request.data, partial=True)
+        if slzr.is_valid():
+            slzr.save()
+
+        return Response(slzr.data)
+
 
 class StatusViewset(viewsets.ViewSet):
     @action(methods=["GET"], detail=False, url_name="up")
     def up(self, request):
-        return Response(data={"status": "up"})
+        user = request.user
+
+        user_data = dict()
+        if user.is_anonymous:
+            user_data["authenticated"] = False
+        else:
+            user_data["authenticated"] = True
+            user_data["name"] = f"{user.first_name} {user.last_name}"
+            user_data["email"] = user.email
+
+        data = dict(
+            up=True,
+            user=user_data
+        )
+        return Response(data=data)
 
     @action(methods=["GET", "POST"], detail=False, url_name="cookie")
     def cookie(self, request):
