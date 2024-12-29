@@ -26,5 +26,6 @@ router.register(r'status', StatusViewset, 'status')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include(router.urls))
+    path("api/", include(router.urls)),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]

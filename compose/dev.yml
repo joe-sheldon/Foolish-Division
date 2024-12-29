@@ -27,6 +27,8 @@ services:
       - postgres:postgres
     networks:
       - foolish-network
+    volumes:
+      - ../:/app
 networks:
   foolish-network:
     driver: bridge

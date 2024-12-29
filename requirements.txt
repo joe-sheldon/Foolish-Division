@@ -1,6 +1,11 @@
 asgiref==3.7.2
-django==4.1
+django==4.2
 sqlparse==0.4.4
 psycopg2==2.9.9
 django-cors-headers==4.3.1
 djangorestframework==3.14.0
+
+gunicorn==23.0.0
+
+# Development -- Bifurcate later
+django_browser_reload==1.17.0

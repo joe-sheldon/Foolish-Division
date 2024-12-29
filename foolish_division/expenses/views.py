@@ -1,6 +1,7 @@
 from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from foolish_division.expenses.models import Expense, ExpenseGroup, ExpenseGroupMember
@@ -13,7 +14,7 @@ class ExpenseGroupViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if not user:
-            return ExpenseGroup.objects.none()
+            raise PermissionDenied("You must be logged in")
 
         # Get all ExpenseCategories owned by this user.
         return ExpenseGroupMember.objects\
@@ -27,14 +28,14 @@ class ExpenseViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if not user:
-            return Expense.objects.none()
-        else:
-            return Expense.objects.filter(
-                Q(payer=user) | Q(submitter=user)
-            )
+            raise PermissionDenied("You must be logged in")
+
+        return Expense.objects.filter(
+            Q(payer=user) | Q(submitter=user)
+        )
 
 
 class StatusViewset(viewsets.ViewSet):
     @action(methods=["GET"], detail=False, url_name="ok")
     def ok(self, request):
-        return Response(data={"status": "ok"})
+        return Response(data={"status": "ok bruh"})
