@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Model
@@ -20,7 +21,7 @@ class ExpenseGroupMember(Model):
 
 class ExpenseGroup(Model):
 
-    uuid = models.UUIDField(auto_created=True, primary_key=True, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, auto_created=True, primary_key=True)
 
     name = models.CharField(max_length=128, blank=False, null=False)
     description = models.CharField(max_length=1024, blank=True, null=True)
@@ -39,7 +40,7 @@ class Expense(Model):
         (SHARETYPE_FULL, "Payer Owed Full Expense"),
     )
 
-    uuid = models.UUIDField(auto_created=True, primary_key=True, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, auto_created=True, primary_key=True)
 
     payer = models.ForeignKey(ExpenseProfile, blank=True, null=True, on_delete=models.SET_NULL, related_name="expenses_payer_set")
     submitter = models.ForeignKey(ExpenseProfile, blank=True, null=True, on_delete=models.SET_NULL, related_name="expenses_submitted_set")

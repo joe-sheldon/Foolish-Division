@@ -26,7 +26,7 @@ class LogEntry(Model):
         (TYPE_EXPENSES_SETTLED, "Expenses Settled"),
     )
 
-    created = models.DateTimeField(auto_created=True)
+    created = models.DateTimeField(auto_now=True)
 
     type = models.CharField(max_length=3, choices=TYPE_CHOICES)
     message = models.CharField(max_length=256, blank=True, null=False)

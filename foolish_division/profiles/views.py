@@ -16,6 +16,11 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
     serializer_class = ExpenseProfileSerializer
     permission_classes = [IsProfileOwner]
 
+    def get_serializer_context(self):
+        return dict(
+            request=self.request,
+        )
+
     def get_queryset(self):
         user = self.request.user
         if not user or user.is_anonymous:
@@ -23,23 +28,22 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
 
         return ExpenseProfile.objects.filter(owner=user)
 
-    def get_active_profile_via_cookie(self):
+    def get_primary_profile(self):
         user = self.request.user
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
-        active_profile_uuid = self.request.COOKIES.get("active_profile")
-
         return (ExpenseProfile.objects
-                  .filter(owner=self.request.user)
-                  .get(uuid=active_profile_uuid))
+                          .filter(owner=self.request.user)
+                          .filter(primary=True)
+                          .first())
 
     @action(methods=["GET", "POST", "PATCH"], detail=False, url_name="active")
     def active(self, request):
         if request.method == "GET":
             # Get active profile details
-            active_profile = self.get_active_profile_via_cookie()
-            return ExpenseProfileSerializer(active_profile).data
+            active_profile = self.get_primary_profile()
+            return Response(ExpenseProfileSerializer(active_profile).data)
 
         if request.method == "POST":
             # Change the active profile
@@ -52,15 +56,19 @@ class UserExpenseProfileViewset(viewsets.ModelViewSet):
                 new_active_profile = (ExpenseProfile.objects
                                       .filter(owner=self.request.user)
                                       .get(uuid=new_active_profile_uuid))
+
+                other_profiles = (ExpenseProfile.objects.filter(owner=self.request.user)
+                                .exclude(uuid=new_active_profile_uuid))
+                for profile in other_profiles:
+                    profile.primary = False
+                    profile.save(update_fields=["primary"])
+
+                new_active_profile.primary = True
+                new_active_profile.save(update_fields=["primary"])
             except ExpenseProfile.DoesNotExist:
                 raise ValidationError("Could not find profile")
 
             resp = Response(data=ExpenseProfileSerializer(new_active_profile).data)
-            resp.set_cookie(
-                "active_profile",
-                new_active_profile_uuid,
-                max_age=ACTIVE_PROFILE_COOKIE_MAX_AGE_SECONDS
-            )
             return resp
 
     def update(self, request, *args, **kwargs):
@@ -72,21 +80,22 @@ class ContactedExpenseProfileViewset(viewsets.ReadOnlyModelViewSet):
     """Profiles that the user has shared expenses with"""
     serializer_class = ExpenseProfileSerializer
 
-    def get_active_profile_via_cookie(self):
+    def get_primary_profile(self):
         user = self.request.user
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
-        active_profile_uuid = self.request.COOKIES.get("active_profile")
-
         return (ExpenseProfile.objects
                 .filter(owner=self.request.user)
-                .get(uuid=active_profile_uuid))
+                .filter(primary=True)
+                .first())
 
     def get_friends_of_profile(self, profile: ExpenseProfile):
+
+        group_ids = profile.expensegroupmember_set.values_list("group_id", flat=True)
         member_uuids = (ExpenseGroupMember.objects
                         .exclude(profile=profile)
-                        .filter(group__in=profile.expensegroup_set)
+                        .filter(group_id__in=group_ids)
                         .distinct()
                         .values_list("profile__uuid", flat=True))
 
@@ -98,7 +107,7 @@ class ContactedExpenseProfileViewset(viewsets.ReadOnlyModelViewSet):
         if not user or user.is_anonymous:
             raise PermissionDenied("You must be logged in")
 
-        active_profile = self.get_active_profile_via_cookie()
+        active_profile = self.get_primary_profile()
         friends = self.get_friends_of_profile(active_profile)
 
         return ExpenseProfileSerializer(friends, context={"active_profile": active_profile}).data

@@ -12,12 +12,12 @@ class ExpenseProfileSerializer(serializers.ModelSerializer):
     owner_email = serializers.CharField(source='owner.email', read_only=True)
 
     groups = ExpenseGroupSerializer(many=True, read_only=True)
-    amount_owed = serializers.SerializerMethodField()
+    # amount_owed = serializers.SerializerMethodField()
 
     class Meta:
         model = ExpenseProfile
         fields = (
-            "owner_id", "owner_fname", "owner_lname", "owner_email", "name", "bio", "created", "groups"
+            "owner_id", "owner_fname", "owner_lname", "owner_email", "name", "bio", "created", "groups", "primary", "uuid"
         )
 
     def get_amount_owed(self):
@@ -28,3 +28,13 @@ class ExpenseProfileSerializer(serializers.ModelSerializer):
             return 10.0
 
         return None
+
+    def create(self, validated_data):
+        request = self.context["request"]
+        user = request.user
+
+        data = dict(
+            owner=user,
+            **validated_data
+        )
+        return super().create(data)

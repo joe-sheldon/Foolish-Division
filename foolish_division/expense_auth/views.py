@@ -14,34 +14,28 @@ class UserAuthenticationViewSet(viewsets.ViewSet):
 
     @action(methods=["POST"], detail=False, url_name="login")
     def login(self, request):
+        # FIXME push validation to serializer
         user = self.request.user
         if user and not user.is_anonymous:
             raise PermissionDenied(f"You cannot log in while logged in!")
 
-        slzr = NewUserSerializer(data=request.data)
-        if not NewUserSerializer.is_valid():
-            raise ValidationError("BAD REQUEST")
+        username = request.data.get("username")
+        if not username:
+            raise ValidationError("Username is required")
 
-        new_user = User.objects.create_user(
-            username=slzr.username,
-            email=slzr.username,
-            password=slzr.password,
-            first_name=slzr.first_name,
-            last_name=slzr.last_name,
-        )
+        password = request.data.get("password")
+        if not password:
+            raise ValidationError("Password is required")
 
-        default_profile = ExpenseProfile.objects.create(
-            owner=new_user,
-            name=f"{new_user.first_name} {new_user.last_name}",
-            bio="I'm a new user!",
-            primary=True,
-        )
+        user = User.objects.get(username=username)
+        is_correct_password = user.check_password(password)
 
-        token = Token.objects.create(user=new_user)
+        if is_correct_password:
+            token, created = Token.objects.get_or_create(user=user)
 
         data = dict(
             token=token.key,
-            **UserSerializer(new_user).data
+            **UserSerializer(user).data
         )
         return Response(data=data)
 
