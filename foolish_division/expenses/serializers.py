@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from foolish_division.expenses.expense_helper import ExpenseHelper, ExpenseGroupHelper
 from foolish_division.expenses.models import ExpenseGroup, Expense, ExpenseGroupMember
 from foolish_division.profiles.models import ExpenseProfile
 
@@ -24,10 +25,12 @@ class ExpenseGroupMemberSerializer(serializers.ModelSerializer):
 
 class ExpenseSerializer(serializers.ModelSerializer):
 
+    owed_amount = serializers.SerializerMethodField()
+
     class Meta:
         model = Expense
         fields = (
-            "uuid", "payer", "submitter", "name", "amount", "share_type", "group"
+            "uuid", "payer", "submitter", "name", "amount", "owed_amount", "share_type", "group"
         )
 
     def create(self, validated_data):
@@ -39,6 +42,14 @@ class ExpenseSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return super().create(data)
+
+    def get_owed_amount(self, obj):
+        request = self.context["request"]
+        profile = ExpenseProfile.get_primary_profile(request.user)
+
+        helper = ExpenseHelper(obj, profile)
+        return helper.owed_amount
+
 
 
 class ExpenseGroupSerializer(serializers.ModelSerializer):
@@ -55,10 +66,12 @@ class ExpenseGroupSerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
+    owed_amount = serializers.SerializerMethodField()
+
     class Meta:
         model = ExpenseGroup
         fields = (
-            "uuid", "name", "description", "members", "expenses"
+            "uuid", "name", "description", "members", "expenses", "owed_amount",
         )
 
     def create(self, validated_data):
@@ -72,3 +85,10 @@ class ExpenseGroupSerializer(serializers.ModelSerializer):
         group.create_owner(profile)
 
         return group
+
+    def get_owed_amount(self, obj):
+        request = self.context["request"]
+        profile = ExpenseProfile.get_primary_profile(request.user)
+
+        helper = ExpenseGroupHelper(obj, profile)
+        return helper.owed_amount
