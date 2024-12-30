@@ -7,13 +7,12 @@ from foolish_division.profiles.models import ExpenseProfile
 
 class ExpenseGroupMemberSerializer(serializers.ModelSerializer):
 
-    profile_name = serializers.CharField(source='profile.name', read_only=True)
-    profile_uuid = serializers.CharField(source='profile.uuid', read_only=True)
+    profile_name = serializers.CharField(source='profile.name', read_only=True, required=False)
 
     class Meta:
         model = ExpenseGroupMember
         fields = (
-            "profile_name", "profile_uuid", "type",
+            "profile", "profile_name", "type",
         )
 
     def create(self, validated_data):
@@ -25,12 +24,16 @@ class ExpenseGroupMemberSerializer(serializers.ModelSerializer):
 
 class ExpenseSerializer(serializers.ModelSerializer):
 
+    payer_name = serializers.CharField(source='payer.name', read_only=True, required=False)
+    submitter_name = serializers.CharField(source='submitter.name', read_only=True, required=False)
+    group_name = serializers.CharField(source='group.name', read_only=True, required=False)
+
     owed_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
         fields = (
-            "uuid", "payer", "submitter", "name", "amount", "owed_amount", "share_type", "group"
+            "uuid", "payer", "payer_name", "submitter", "submitter_name", "name", "amount", "owed_amount", "share_type", "group", "group_name"
         )
 
     def create(self, validated_data):

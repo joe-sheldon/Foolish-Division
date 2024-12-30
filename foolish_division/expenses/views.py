@@ -6,7 +6,8 @@ from rest_framework.response import Response
 
 from foolish_division.expenses.models import Expense, ExpenseGroupMember, ExpenseGroup
 from foolish_division.expenses.permissions import IsInExpenseGroup, IsExpenseOwnedOrShared
-from foolish_division.expenses.serializers import ExpenseSerializer, ExpenseGroupSerializer
+from foolish_division.expenses.serializers import ExpenseSerializer, ExpenseGroupSerializer, \
+    ExpenseGroupMemberSerializer
 from foolish_division.profiles.models import ExpenseProfile
 
 
@@ -21,6 +22,24 @@ class ExpenseGroupViewset(viewsets.ModelViewSet):
             .values_list("group__uuid", flat=True)
 
         return ExpenseGroup.objects.filter(uuid__in=group_ids)
+
+    @action(methods=["POST"], detail=True, url_name="add_member")
+    def add_member(self, request, pk=None):
+        group = self.get_object()
+        profile_uuid = request.data.get("profile")
+        profile = ExpenseProfile.objects.get(uuid=profile_uuid)
+        group_member = group.create_member(profile=profile)
+
+        return Response(ExpenseGroupMemberSerializer(group_member).data, status=status.HTTP_201_CREATED)
+
+
+    @action(methods=["DELETE"], detail=True, url_path="del_member/(?P<second_pk>[^/.]+)")
+    def del_member(self, request, pk=None, second_pk=None):
+        group = self.get_object()
+
+        group.members.filter(profile__uuid=second_pk).delete()
+
+        return Response(dict(), status=status.HTTP_204_NO_CONTENT)
 
 
 class ExpenseViewset(viewsets.ModelViewSet):

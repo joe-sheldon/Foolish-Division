@@ -19,6 +19,9 @@ class ExpenseGroupMember(Model):
     group = models.ForeignKey("expenses.ExpenseGroup", on_delete=models.CASCADE, related_name="members")
     type = models.CharField(max_length=3, choices=MEMBER_TYPE_CHOICES, default=MEMBER_TYPE_MEMBER)
 
+    class Meta:
+        unique_together = ("profile", "group")
+
 class ExpenseGroup(Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, auto_created=True, primary_key=True)
@@ -31,10 +34,10 @@ class ExpenseGroup(Model):
         return Expense.objects.filter(group=self)
 
     def create_owner(self, profile) -> ExpenseGroupMember:
-        return ExpenseGroupMember.objects.create(profile=profile, group=self, type=ExpenseGroupMember.MEMBER_TYPE_OWNER)
+        return ExpenseGroupMember.objects.get_or_create(profile=profile, group=self, type=ExpenseGroupMember.MEMBER_TYPE_OWNER)[0]
 
     def create_member(self, profile) -> ExpenseGroupMember:
-        return ExpenseGroupMember.objects.create(profile=profile, group=self, type=ExpenseGroupMember.MEMBER_TYPE_MEMBER)
+        return ExpenseGroupMember.objects.get_or_create(profile=profile, group=self, type=ExpenseGroupMember.MEMBER_TYPE_MEMBER)[0]
 
 
 class Expense(Model):
