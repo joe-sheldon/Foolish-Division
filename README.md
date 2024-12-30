@@ -11,3 +11,5 @@ the core user experience back without having to pay Splitwise money to submit mo
 This project has just started. This will use a Django backend with a ReactJS frontend. Currently, this is being 
 deployed to Render @ [www.foolish-division.com](https://www.foolish-division.com). Local development should use the
 dev.yml Docker Compose to set up the backend and manually launch the frontend in a separate process.
+
+The current state of the code is "Get it working". Cleanup will occur once proved out.
