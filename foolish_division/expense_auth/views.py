@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from foolish_division.expense_auth.serializers import NewUserSerializer, UserSerializer
 from foolish_division.profiles.models import ExpenseProfile
+from foolish_division.settings import DJANGO_AUTH_TOKEN_MAX_AGE_SECONDS
 
 
 # Create your views here.
@@ -37,7 +38,11 @@ class UserAuthenticationViewSet(viewsets.ViewSet):
             token=token.key,
             **UserSerializer(user).data
         )
-        return Response(data=data)
+
+        res = Response(data=data)
+        res.set_cookie("auth_token", token.key, max_age=DJANGO_AUTH_TOKEN_MAX_AGE_SECONDS)
+
+        return res
 
     @action(methods=["POST"], detail=False, url_name="logout")
     def logout(self, request):
@@ -52,6 +57,9 @@ class UserAuthenticationViewSet(viewsets.ViewSet):
         data = dict(
             msg="Logged out",
         )
+        res = Response(data=data)
+        res.set_cookie("auth_token", "LOGGED_OUT", max_age=DJANGO_AUTH_TOKEN_MAX_AGE_SECONDS)
+
         return Response(data=data)
 
     @action(methods=["POST"], detail=False, url_name="signup")
@@ -84,4 +92,8 @@ class UserAuthenticationViewSet(viewsets.ViewSet):
             token=token.key,
             **UserSerializer(new_user).data
         )
-        return Response(data=data)
+
+        res = Response(data=data)
+        res.set_cookie("auth_token", token.key, max_age=DJANGO_AUTH_TOKEN_MAX_AGE_SECONDS)
+
+        return res

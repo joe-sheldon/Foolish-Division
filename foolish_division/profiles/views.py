@@ -7,7 +7,6 @@ from foolish_division.expenses.models import ExpenseGroupMember
 from foolish_division.profiles.models import ExpenseProfile
 from foolish_division.profiles.permissions import IsProfileOwner
 from foolish_division.profiles.serializers import ExpenseProfileSerializer
-from foolish_division.settings import ACTIVE_PROFILE_COOKIE_MAX_AGE_SECONDS
 
 
 # Create your views here.
