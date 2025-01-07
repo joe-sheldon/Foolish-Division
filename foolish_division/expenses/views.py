@@ -1,6 +1,6 @@
 from django.db.models import Q
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, authentication_classes
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 
@@ -80,8 +80,28 @@ class ExpenseViewset(viewsets.ModelViewSet):
 
 
 class StatusViewset(viewsets.ViewSet):
+
+    @authentication_classes([])
     @action(methods=["GET"], detail=False, url_name="up")
     def up(self, request):
+        user = request.user
+
+        user_data = dict()
+        if user.is_anonymous:
+            user_data["authenticated"] = False
+        else:
+            user_data["authenticated"] = True
+            user_data["name"] = f"{user.first_name} {user.last_name}"
+            user_data["email"] = user.email
+
+        data = dict(
+            up=True,
+            user=user_data
+        )
+        return Response(data=data)
+
+    @action(methods=["GET"], detail=False, url_name="check_token")
+    def check_token(self, request):
         user = request.user
 
         user_data = dict()
