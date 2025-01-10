@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "0.0.0.0",
+    "127.0.0.1",
     "www.foolish-division.com",
     "api.foolish-division.com",
     "foolish-division.onrender.com",
@@ -44,9 +45,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "rest_framework.authtoken",
+    "django_browser_reload",
     "foolish_division.expenses",
-    "foolish_division.user",
     "foolish_division.log",
+    "foolish_division.profiles",
+    "foolish_division.expense_auth",
 ]
 
 MIDDLEWARE = [
@@ -58,6 +62,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = "foolish_division.urls"
@@ -91,13 +96,28 @@ DB_PORT = os.getenv("DJANGO_DB_PORT", "5432")
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
         'NAME': DB_NAME,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'foolish_division.expense_auth.authentication.FoolishTokenAuthentication',
+    ],
+    'DEFAULT_PARSER_CLASSES': (
+            'rest_framework.parsers.JSONParser',
+            'rest_framework.parsers.FormParser',
+            'rest_framework.parsers.MultiPartParser',
+    ),
 }
 
 
@@ -106,16 +126,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.expense_auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": "django.contrib.expense_auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": "django.contrib.expense_auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "django.contrib.expense_auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -156,3 +176,5 @@ CSRF_TRUSTED_ORIGINS = [
     "https://api.foolish-division.com",
     "https://foolish-division.onrender.com",
 ]
+
+DJANGO_AUTH_TOKEN_MAX_AGE_SECONDS = int(os.getenv("DJANGO_AUTH_TOKEN_MAX_AGE_SECONDS", 300000))

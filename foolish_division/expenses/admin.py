@@ -1,15 +1,15 @@
 from django.contrib import admin
 
-from foolish_division.expenses.models import ExpenseCategory, ExpenseCategoryOwner, VendorCategory, Expense, Vendor
+from foolish_division.expenses.models import Expense, ExpenseGroupMember, ExpenseGroup
 
 
-@admin.register(ExpenseCategoryOwner)
-class ExpenseGroupMember(admin.ModelAdmin):
-    list_display = ('user', 'group', 'type')
+@admin.register(ExpenseGroupMember)
+class ExpenseGroupMemberAdmin(admin.ModelAdmin):
+    list_display = ('profile', 'group', 'type')
 
 
-@admin.register(ExpenseCategory)
-class ExpenseGroup(admin.ModelAdmin):
+@admin.register(ExpenseGroup)
+class ExpenseGroupAdmin(admin.ModelAdmin):
     list_display = ('uuid', 'name', 'description')
 
 
